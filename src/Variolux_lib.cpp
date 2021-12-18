@@ -24,6 +24,7 @@
 
 class variolux{
     private:
+        int a;
         int NUM_colors=134;
         int RGB[134][3];
         int RGB_NUM=0;
@@ -74,7 +75,7 @@ class variolux{
             Nombre = tipo;
             if(Nombre == "Equipo002"){
                 EEPROM.begin(500);
-                Serial2.begin(9600);
+                Serial2.begin(19200);
                 #if _DEBUG_
                     Serial.begin(9600);
                     Serial.println("__DEBUG__ INICIADO");
@@ -121,19 +122,19 @@ class variolux{
                 VP_ENCODER[0] = 18;
                 VP_ENCODER[1] = 19;
                 VP_ENCODER[2] = 4;
-                Serial2.begin(9600);
+                Serial2.begin(19200);
                 runtime=millis();
             }
         }
         
 
         void setPins(){
-            for(int i=0;i<this->VarioplusDimeableSteps;i++){
+            for(int i=0;i<VarioplusDimeableSteps;i++){
                 #if _DEBUG_
-                    Serial.println("Setting Relay :" + String(this->varioplusDimeablePins[i]));
+                    Serial.println("Setting Relay :" + String(varioplusDimeablePins[i]));
                 #endif
-                pinMode(this->varioplusDimeablePins[i],OUTPUT);
-                digitalWrite(this->varioplusDimeablePins[i],POWEROFF);
+                pinMode(varioplusDimeablePins[i],OUTPUT);
+                digitalWrite(varioplusDimeablePins[i],POWEROFF);
             }
             digitalWrite(14,POWERON); // AYUDA A SETEAR LA OPACIDAD DEL SPD
             delay(5000);
@@ -223,7 +224,7 @@ class variolux{
 
 //****************************** READ ENCODER ************************************//
         void readEncoder(){
-            int a;
+            
             if(digitalRead(FR_ENCODER[2]) == 0){
                 enconderTimer = millis();
                 while(digitalRead(FR_ENCODER[2]) == 0){
@@ -283,13 +284,13 @@ class variolux{
 
             if(digitalRead(VP_ENCODER[2]) == 0){
                 encoder_VP.pauseCount();
-                if(encoder_VP.getCount()>= 0 && encoder_VP.getCount()< 20 ){
-                    encoder_VP.setCount(20);
+                if(encoder_VP.getCount()>= 0 && encoder_VP.getCount()< 200 ){
+                    encoder_VP.setCount(200);
                     VP_ENCODER_SCREEN = 10;
                     sendUART("VP,K");
                     Serial.println("a");
                 } 
-                else if(encoder_VP.getCount() ==20 ){
+                else if(encoder_VP.getCount() ==200 ){
                     encoder_VP.setCount(0);
                     VP_ENCODER_SCREEN = 0;
                     sendUART("VP,A");
@@ -298,21 +299,21 @@ class variolux{
                 delay(250);
                 encoder_VP.resumeCount();
                 a= encoder_VP.getCount();
-                Serial.println("VARIO PLUS LEVEL : " + String(a));
+                Serial.println("VARIO PLUS LEVEL : " + String(VP_ENCODER_SCREEN));
             }
             
-            if(millis() - encoder2Timer > 2000){
-                sendUART("VP,C");
-                encoder_VP.resumeCount();
-                a= encoder_VP.getCount();
-                
-                encoder2Timer = millis();
-
-            }
+            
 
            
-            VP_ENCODER_SCREEN = a/2;
-            if(encoder_VP.getCount()>=20)encoder_VP.setCount(20);
+            VP_ENCODER_SCREEN = encoder_VP.getCount()/20;
+            if(LAST_VP_ENCODER_SCREEN != VP_ENCODER_SCREEN){
+                LAST_VP_ENCODER_SCREEN = VP_ENCODER_SCREEN;
+                setVarioPlus(VP_ENCODER_SCREEN);
+                
+                Serial.println("VARIO PLUS LEVEL : " + String(VP_ENCODER_SCREEN));
+            }
+            
+            if(encoder_VP.getCount()>=200)encoder_VP.setCount(200);
             else if(encoder_VP.getCount()<0)encoder_VP.setCount(0);
             askLimits();
             updateOled();    
@@ -322,7 +323,7 @@ class variolux{
             ESP32Encoder::useInternalWeakPullResistors=UP;
             encoder_FR.attachSingleEdge(35, 23);
             pinMode(FR_ENCODER[2] ,INPUT);
-            encoder_VP.attachHalfQuad(18, 19);
+            encoder_VP.attachSingleEdge(18, 19);
             pinMode(VP_ENCODER[2] ,INPUT);
             encoder_FR.setCount(0);
             encoder_VP.clearCount();
@@ -342,7 +343,51 @@ class variolux{
             // text display tests
             
         }
-
+        void setVarioPlus(char c){
+            switch(c){
+                case 0:
+                    Serial.println("funka swtch case");
+                    sendUART("VP,A");
+                    break;
+                case 1:
+                    sendUART("VP,B");
+                    Serial.println("funka swtch case");
+                    break;
+                case 2:
+                    sendUART("VP,C");
+                    Serial.println("funka swtch case");
+                    break;
+                case 3:
+                    sendUART("VP,D");
+                    Serial.println("funka swtch case");
+                    break;
+                case 4:
+                    sendUART("VP,E");
+                    Serial.println("funka swtch case");
+                    break;
+                case 5:
+                    sendUART("VP,F");
+                    Serial.println("funka swtch case");
+                    break;
+                case 6:
+                    sendUART("VP,G");
+                    Serial.println("funka swtch case");
+                    break;
+                case 7:
+                    sendUART("VP,H");
+                    Serial.println("funka swtch case");
+                    break;
+                case 8:
+                    sendUART("VP,I");
+                    break;
+                case 9:
+                    sendUART("VP,J");
+                    break;
+                case 10:
+                    sendUART("VP,K");
+                    break;
+            }
+        }
         void saveDataColors(){
             for(int i=0 ;i<NUM_colors;i++){
                 setColor(i,RGB[i][0],RGB[i][1],RGB[i][2]);
@@ -529,7 +574,7 @@ class variolux{
                 
                 digitalWrite(varioplusDimeablePins[lastValue+1],POWEROFF);
                 digitalWrite(varioplusDimeablePins[0],POWERON); //PRENDE RELAY 0
-                delay(550);
+                delay(150);
                 digitalWrite(varioplusDimeablePins[0],POWEROFF); //APAGA RELAY 0
                 delay(150);
                 digitalWrite(varioplusDimeablePins[value+1],POWERON);
