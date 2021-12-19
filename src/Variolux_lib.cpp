@@ -214,11 +214,11 @@ class variolux{
             display.setTextSize(1);
             display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
             display.setCursor(0,0);
-            display.print(Nombre);
-            display.setCursor(0,10);
-            display.print("VOLTAJE:");
-            display.setCursor(0,20);
-            display.print("C #");
+            //display.print(Nombre);
+            display.setCursor(0,0);
+            display.print("VP:");
+            display.setCursor(0,16);
+            display.print("FR #");
             display.setCursor(0,0);        
             oledMenuPrincipal();
         }
