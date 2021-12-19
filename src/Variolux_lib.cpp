@@ -116,12 +116,12 @@ class variolux{
                     Serial.begin(9600);
                     Serial.println("__DEBUG__ INICIADO");
                 #endif
-                FR_ENCODER[0] = 35;
-                FR_ENCODER[1] = 23;
-                FR_ENCODER[2] = 32;
-                VP_ENCODER[0] = 18;
-                VP_ENCODER[1] = 19;
-                VP_ENCODER[2] = 4;
+                VP_ENCODER[0] = 35;
+                VP_ENCODER[1] = 23;
+                VP_ENCODER[2] = 32;
+                FR_ENCODER[0] = 18;
+                FR_ENCODER[1] = 19;
+                FR_ENCODER[2] = 4;
                 Serial2.begin(19200);
                 runtime=millis();
             }
@@ -287,13 +287,11 @@ class variolux{
                 if(encoder_VP.getCount()>= 0 && encoder_VP.getCount()< 200 ){
                     encoder_VP.setCount(200);
                     VP_ENCODER_SCREEN = 10;
-                    sendUART("VP,K");
                     Serial.println("a");
                 } 
                 else if(encoder_VP.getCount() ==200 ){
                     encoder_VP.setCount(0);
                     VP_ENCODER_SCREEN = 0;
-                    sendUART("VP,A");
                     Serial.println("b");
                 } 
                 delay(250);
@@ -321,10 +319,10 @@ class variolux{
 //**********************************Encoder Setup ***********************************//
         void EncoderSetup(){
             ESP32Encoder::useInternalWeakPullResistors=UP;
-            encoder_FR.attachSingleEdge(35, 23);
-            pinMode(FR_ENCODER[2] ,INPUT);
-            encoder_VP.attachSingleEdge(18, 19);
+            encoder_VP.attachSingleEdge(VP_ENCODER[0], VP_ENCODER[1]);
             pinMode(VP_ENCODER[2] ,INPUT);
+            encoder_FR.attachSingleEdge(FR_ENCODER[0], FR_ENCODER[1]);
+            pinMode(FR_ENCODER[2] ,INPUT);
             encoder_FR.setCount(0);
             encoder_VP.clearCount();
             encoder_FR.pauseCount();
@@ -568,26 +566,21 @@ class variolux{
             }   
         }
         
-        int setVarioplusStep(int value){
+        void setVarioplusStep(int value){
             
             if(value>=0 && value <= VarioplusDimeableSteps){
                 
                 digitalWrite(varioplusDimeablePins[lastValue+1],POWEROFF);
                 digitalWrite(varioplusDimeablePins[0],POWERON); //PRENDE RELAY 0
-                delay(150);
+                delay(200);
                 digitalWrite(varioplusDimeablePins[0],POWEROFF); //APAGA RELAY 0
-                delay(150);
+                delay(200);
                 digitalWrite(varioplusDimeablePins[value+1],POWERON);
                 lastValue = value;
                 #if _DEBUG_
                     Serial.println("cambiando Relay :" + String(varioplusDimeablePins[value]));
                 #endif
-                return 201;
             }
-            else{
-                return 501;
-            }
-            
         }
         void bleInit(String name){
             

@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "Variolux_lib.cpp"
 
-variolux ECU_VL_002("Equipo002");
+variolux ECU_VL_002("Mando002");
 
 void setup() {
 
