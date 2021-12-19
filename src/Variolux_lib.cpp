@@ -75,7 +75,8 @@ class variolux{
             Nombre = tipo;
             if(Nombre == "Equipo002"){
                 EEPROM.begin(500);
-                Serial2.begin(19200);
+                Serial2.begin(9600);
+                //bleInit(Nombre);
                 #if _DEBUG_
                     Serial.begin(9600);
                     Serial.println("__DEBUG__ INICIADO");
@@ -122,7 +123,7 @@ class variolux{
                 FR_ENCODER[0] = 18;
                 FR_ENCODER[1] = 19;
                 FR_ENCODER[2] = 4;
-                Serial2.begin(19200);
+                Serial2.begin(9600);
                 runtime=millis();
             }
         }
@@ -245,11 +246,17 @@ class variolux{
 
                 if(FR_ENCODER_SCREEN>4)FR_ENCODER_SCREEN = 0;
                 else if(FR_ENCODER_SCREEN<0)FR_ENCODER_SCREEN = 4;
+                if(FR_ENCODER_SCREEN == 0) {
+                    if(RGB_NUM>=100)sendUART("FR,"+String(RGB_NUM));
+                    else if(RGB_NUM>=10 && RGB_NUM<100) sendUART("FR,0"+String(RGB_NUM));
+                    else if(RGB_NUM>=0 && RGB_NUM<10) sendUART("FR,00"+String(RGB_NUM));
+                }
                 if(FR_ENCODER_SCREEN == 1) {
                     FR_LIMIT=133;
                     encoder_FR.setCount(RGB_NUM);
                     encoder_FR.resumeCount();
                     LAST_ENCODER_SCREEN = FR_ENCODER_SCREEN;
+                    
                 }
                 else if(FR_ENCODER_SCREEN == 2 && flag_change_color){
                     FR_LIMIT=255;
@@ -273,6 +280,9 @@ class variolux{
                 else if(FR_ENCODER_SCREEN == 0 && LAST_ENCODER_SCREEN == 4){
                     encoder_FR.pauseCount();
                     setColor(RGB_NUM,RGB[RGB_NUM][0],RGB[RGB_NUM][1],RGB[RGB_NUM][2]);
+                    if(RGB_NUM>=100)sendUART("FR,"+String(RGB_NUM));
+                    else if(RGB_NUM>=10 && RGB_NUM<100) sendUART("FR,0"+String(RGB_NUM));
+                    else if(RGB_NUM>=0 && RGB_NUM<10) sendUART("FR,00"+String(RGB_NUM));
                     LAST_ENCODER_SCREEN = FR_ENCODER_SCREEN;
                 }
                 else if(FR_ENCODER_SCREEN == 0 && LAST_ENCODER_SCREEN == 1){
@@ -570,13 +580,17 @@ class variolux{
             
             if(value>=0 && value <= VarioplusDimeableSteps){
                 
-                digitalWrite(varioplusDimeablePins[lastValue+1],POWEROFF);
+                for(int i=0;i<10;i++)digitalWrite(varioplusDimeablePins[i+1],POWEROFF);
                 digitalWrite(varioplusDimeablePins[0],POWERON); //PRENDE RELAY 0
-                delay(200);
+                delay(100);
                 digitalWrite(varioplusDimeablePins[0],POWEROFF); //APAGA RELAY 0
-                delay(200);
-                digitalWrite(varioplusDimeablePins[value+1],POWERON);
+                delay(100);
+                digitalWrite(varioplusDimeablePins[value],POWERON);
                 lastValue = value;
+                Serial.print("Last Value = ");
+                Serial.println(lastValue);
+                Serial.print("new Value = ");
+                Serial.println(value);
                 #if _DEBUG_
                     Serial.println("cambiando Relay :" + String(varioplusDimeablePins[value]));
                 #endif

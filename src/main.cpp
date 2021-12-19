@@ -5,7 +5,7 @@ variolux ECU_VL_002("Mando002");
 
 void setup() {
 
-  ECU_VL_002.shutDownVarioPlus();
+  //ECU_VL_002.shutDownVarioPlus();
   ECU_VL_002.OledSetup();
   ECU_VL_002.EncoderSetup();
   ECU_VL_002.showOled();
@@ -17,3 +17,5 @@ void loop() {
     ECU_VL_002.run();
 
 }
+
+//problemas entre btserial y serial 2 por harwadres
