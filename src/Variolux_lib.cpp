@@ -26,7 +26,7 @@ class variolux{
     private:
         int a;
         int NUM_colors=134;
-        int RGB[134][3];
+        int tablaRGB[134][3];
         int RGB_NUM=0;
         String Nombre;
         int R_ADD = 0;
@@ -36,7 +36,7 @@ class variolux{
         unsigned long int runtime = 0;
         BluetoothSerial SerialBT;
         CRGB leds1[NUM_LEDS1];
-        CRGB leds2;
+        CRGB leds2[NUM_LEDS1];
         int DATA_PIN1 , DATA_PIN2;
         char modulo[];
         String chipRGB; 
@@ -92,7 +92,7 @@ class variolux{
                 const int P_DAT2 = 23;
                 // CRGB LEDS2[NUM_LEDS2];
                 //this-> leds2  =  LEDS2;
-            
+                FastLED.addLeds<LED_TYPE , P_DAT2, GRB>(leds2, NUM_LEDS1);
                 FastLED.addLeds<LED_TYPE , P_DAT1, GRB>(leds1, NUM_LEDS1);
                 varioplusStaticPins = new int[VarioplusStaticChannels];     //define la cantidad de pasos de 1 varioplus
                 varioplusDimeablePins = new int[VarioplusDimeableSteps];
@@ -104,7 +104,7 @@ class variolux{
                 varioplusDimeablePins[4] = 26;
                 varioplusDimeablePins[5] = 27;
                 varioplusDimeablePins[6] = 13;
-                varioplusDimeablePins[7] = 4;
+                varioplusDimeablePins[7] = 4; 
                 varioplusDimeablePins[8] = 18;
                 varioplusDimeablePins[9] = 19;
                 varioplusDimeablePins[10] = 21;
@@ -173,33 +173,33 @@ class variolux{
                 display.setCursor(45,20);
                 if(FR_ENCODER_SCREEN == 2){
                     display.setTextColor(SSD1306_BLACK,SSD1306_WHITE);
-                    RGB[RGB_NUM][0] = encoder_FR.getCount();
-                    if(RGB[RGB_NUM][0]>255)encoder_FR.setCount(0);
-                    else if(RGB[RGB_NUM][0]<0)encoder_FR.setCount(255);
-                    RGB[RGB_NUM][0] = encoder_FR.getCount();
+                    tablaRGB[RGB_NUM][0] = encoder_FR.getCount();
+                    if(tablaRGB[RGB_NUM][0]>255)encoder_FR.setCount(0);
+                    else if(tablaRGB[RGB_NUM][0]<0)encoder_FR.setCount(255);
+                    tablaRGB[RGB_NUM][0] = encoder_FR.getCount();
                 }
                 else display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-                display.print(RGB[RGB_NUM][0]);
+                display.print(tablaRGB[RGB_NUM][0]);
                 display.setCursor(70,20);
                 if(FR_ENCODER_SCREEN == 3){
                     display.setTextColor(SSD1306_BLACK,SSD1306_WHITE);
-                    RGB[RGB_NUM][1] = encoder_FR.getCount();
-                    if(RGB[RGB_NUM][1]>255)encoder_FR.setCount(0);
-                    else if(RGB[RGB_NUM][1]<0)encoder_FR.setCount(255);
-                    RGB[RGB_NUM][1] = encoder_FR.getCount();
+                    tablaRGB[RGB_NUM][1] = encoder_FR.getCount();
+                    if(tablaRGB[RGB_NUM][1]>255)encoder_FR.setCount(0);
+                    else if(tablaRGB[RGB_NUM][1]<0)encoder_FR.setCount(255);
+                    tablaRGB[RGB_NUM][1] = encoder_FR.getCount();
                 }
                 else display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-                display.print(RGB[RGB_NUM][1]);
+                display.print(tablaRGB[RGB_NUM][1]);
                 display.setCursor(95,20);
                 if(FR_ENCODER_SCREEN == 4){
                     display.setTextColor(SSD1306_BLACK,SSD1306_WHITE);
-                    RGB[RGB_NUM][2] = encoder_FR.getCount();
-                    if(RGB[RGB_NUM][2]>255)encoder_FR.setCount(0);
-                    else if(RGB[RGB_NUM][2]<0)encoder_FR.setCount(255);
-                    RGB[RGB_NUM][2] = encoder_FR.getCount();
+                    tablaRGB[RGB_NUM][2] = encoder_FR.getCount();
+                    if(tablaRGB[RGB_NUM][2]>255)encoder_FR.setCount(0);
+                    else if(tablaRGB[RGB_NUM][2]<0)encoder_FR.setCount(255);
+                    tablaRGB[RGB_NUM][2] = encoder_FR.getCount();
                 }
                 else display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-                display.print(RGB[RGB_NUM][2]);
+                display.print(tablaRGB[RGB_NUM][2]);
                 display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
                 // menu principal para varioplus
                 display.setCursor(50,10);
@@ -260,26 +260,26 @@ class variolux{
                 }
                 else if(FR_ENCODER_SCREEN == 2 && flag_change_color){
                     FR_LIMIT=255;
-                    encoder_FR.setCount(RGB[RGB_NUM][0]);
-                    Serial.println(RGB[RGB_NUM][0]);
+                    encoder_FR.setCount(tablaRGB[RGB_NUM][0]);
+                    Serial.println(tablaRGB[RGB_NUM][0]);
                     encoder_FR.resumeCount();
                     LAST_ENCODER_SCREEN = FR_ENCODER_SCREEN;
                 } 
                 else if(FR_ENCODER_SCREEN == 3 && flag_change_color) {
                     FR_LIMIT=255;
-                    encoder_FR.setCount(RGB[RGB_NUM][1]);
+                    encoder_FR.setCount(tablaRGB[RGB_NUM][1]);
                     encoder_FR.resumeCount();
                     LAST_ENCODER_SCREEN = FR_ENCODER_SCREEN;
                 }
                 else if(FR_ENCODER_SCREEN == 4 ) {
                     FR_LIMIT=255;
-                    encoder_FR.setCount(RGB[RGB_NUM][2]);
+                    encoder_FR.setCount(tablaRGB[RGB_NUM][2]);
                     encoder_FR.resumeCount();
                     LAST_ENCODER_SCREEN = FR_ENCODER_SCREEN;
                 }
                 else if(FR_ENCODER_SCREEN == 0 && LAST_ENCODER_SCREEN == 4){
                     encoder_FR.pauseCount();
-                    setColor(RGB_NUM,RGB[RGB_NUM][0],RGB[RGB_NUM][1],RGB[RGB_NUM][2]);
+                    setColor(RGB_NUM,tablaRGB[RGB_NUM][0],tablaRGB[RGB_NUM][1],tablaRGB[RGB_NUM][2]);
                     if(RGB_NUM>=100)sendUART("FR,"+String(RGB_NUM));
                     else if(RGB_NUM>=10 && RGB_NUM<100) sendUART("FR,0"+String(RGB_NUM));
                     else if(RGB_NUM>=0 && RGB_NUM<10) sendUART("FR,00"+String(RGB_NUM));
@@ -398,7 +398,14 @@ class variolux{
         }
         void saveDataColors(){
             for(int i=0 ;i<NUM_colors;i++){
-                setColor(i,RGB[i][0],RGB[i][1],RGB[i][2]);
+                setColor(i,tablaRGB[i][0],tablaRGB[i][1],tablaRGB[i][2]);
+            }
+        }
+        void setVariablesColors(int data[][3]){
+            for (int i = 0; i< NUM_colors ;i++){
+                for (int j = 0; j< 3 ;j++){
+                    tablaRGB[i][j] = data[i][j];
+                }
             }
         }
         void setColor(int _addr_, int _R_, int _G_, int _B_){
@@ -409,9 +416,9 @@ class variolux{
             delay(1);
         }
         void getColor(int _addr_){
-            RGB[_addr_][0] = EEPROM.read(_addr_*3+0);
-            RGB[_addr_][1] = EEPROM.read(_addr_*3+1);
-            RGB[_addr_][2] = EEPROM.read(_addr_*3+2); 
+            tablaRGB[_addr_][0] = EEPROM.read(_addr_*3+0);
+            tablaRGB[_addr_][1] = EEPROM.read(_addr_*3+1);
+            tablaRGB[_addr_][2] = EEPROM.read(_addr_*3+2); 
             delay(1);
         }
         void getDataColors(){
@@ -426,7 +433,8 @@ class variolux{
                 Serial.println("Restarting...");
                 EEPROM.begin(512);
                 delay(1000);
-                getDataColors();
+                //saveDataColors();
+                //getDataColors();
                // ESP.restart();
             }
         }
@@ -474,6 +482,7 @@ class variolux{
                     int BLUE = random(255);
                     for(int i=0 ; i<NUM_LEDS1 ; i++){
                         leds1[i] = CRGB(RED,GREEN,BLUE);
+                        leds2[i] = CRGB(RED,GREEN,BLUE);
                     }
                     FastLED.show();
                     runtime = millis();
@@ -484,6 +493,7 @@ class variolux{
         void changeColor(int R,int G,int B){
             for(int i=0 ; i<NUM_LEDS1 ; i++){
                         leds1[i] = CRGB(R,G,B);
+                        leds2[i] = CRGB(R,G,B);
                     }
             FastLED.show();
         }
@@ -552,11 +562,14 @@ class variolux{
 
                 else if(datos[3]>='0' && datos[3]<='9' && datos[4]>='0' && datos[4]<='9' && datos[5]>='0' && datos[5]<='9'){
                  
-                    int prog = 3*(datos[5]-48 + 10*(datos[4]-48)+ 100* (datos[3]-48));
+                    int prog = datos[5]-48 + 10*(datos[4]-48)+ 100* (datos[3]-48);
                     int R_,G_,B_;
-                    R_ = EEPROM.read(prog);
-                    G_ = EEPROM.read(prog+1);
-                    B_ = EEPROM.read(prog+2); 
+                    R_= tablaRGB[prog][0];
+                    G_= tablaRGB[prog][1];
+                    B_= tablaRGB[prog][2];
+                    //R_ = EEPROM.read(prog);
+                    //G_ = EEPROM.read(prog+1);
+                    //B_ = EEPROM.read(prog+2); 
                     #if _DEBUG_
                         Serial.print("progADDR = ");
                         Serial.print(prog);

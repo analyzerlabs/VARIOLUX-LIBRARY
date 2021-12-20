@@ -3,5 +3,3 @@
 #define NUM_LEDS2 168
 
 
-
-
