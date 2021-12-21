@@ -159,7 +159,7 @@ class variolux{
         void oledMenuPrincipal(){
                 //menu principal para Fractal
                 display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-                display.setCursor(20,20);
+                display.setCursor(70,16);  //POSICION DEL ONTADOR DE COLORES EN OLED
                 if(FR_ENCODER_SCREEN == 1){
                     display.setTextColor(SSD1306_BLACK,SSD1306_WHITE);
                     RGB_NUM = encoder_FR.getCount();
@@ -170,7 +170,7 @@ class variolux{
                 else display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
 
                 display.print(RGB_NUM);
-                display.setCursor(45,20);
+                display.setCursor(100,16);
                 if(FR_ENCODER_SCREEN == 2){
                     display.setTextColor(SSD1306_BLACK,SSD1306_WHITE);
                     tablaRGB[RGB_NUM][0] = encoder_FR.getCount();
@@ -179,8 +179,8 @@ class variolux{
                     tablaRGB[RGB_NUM][0] = encoder_FR.getCount();
                 }
                 else display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-                display.print(tablaRGB[RGB_NUM][0]);
-                display.setCursor(70,20);
+                //display.print(tablaRGB[RGB_NUM][0]);
+                display.setCursor(70,16);
                 if(FR_ENCODER_SCREEN == 3){
                     display.setTextColor(SSD1306_BLACK,SSD1306_WHITE);
                     tablaRGB[RGB_NUM][1] = encoder_FR.getCount();
@@ -189,8 +189,8 @@ class variolux{
                     tablaRGB[RGB_NUM][1] = encoder_FR.getCount();
                 }
                 else display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-                display.print(tablaRGB[RGB_NUM][1]);
-                display.setCursor(95,20);
+                //display.print(tablaRGB[RGB_NUM][1]);
+                display.setCursor(95,16);
                 if(FR_ENCODER_SCREEN == 4){
                     display.setTextColor(SSD1306_BLACK,SSD1306_WHITE);
                     tablaRGB[RGB_NUM][2] = encoder_FR.getCount();
@@ -199,10 +199,10 @@ class variolux{
                     tablaRGB[RGB_NUM][2] = encoder_FR.getCount();
                 }
                 else display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-                display.print(tablaRGB[RGB_NUM][2]);
+                //display.print(tablaRGB[RGB_NUM][2]);
                 display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
                 // menu principal para varioplus
-                display.setCursor(50,10);
+                display.setCursor(45,0);
                 if(VP_ENCODER_SCREEN<0)VP_ENCODER_SCREEN=0;
                 if(VP_ENCODER_SCREEN>10)VP_ENCODER_SCREEN=10;
                 display.print(VP_ENCODER_SCREEN*10);
@@ -211,12 +211,12 @@ class variolux{
 
         void updateOled(){
             display.clearDisplay();
-            display.setTextSize(1);
+            display.setTextSize(2);
             display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
             display.setCursor(0,0);
             //display.print(Nombre);
             display.setCursor(0,0);
-            display.print("VP:");
+            display.print("VP:    VAC");
             display.setCursor(0,16);
             display.print("FR #");
             display.setCursor(0,0);        
@@ -407,6 +407,7 @@ class variolux{
                     tablaRGB[i][j] = data[i][j];
                 }
             }
+            saveDataColors();
         }
         void setColor(int _addr_, int _R_, int _G_, int _B_){
             EEPROM.write(_addr_*3,_R_);                 
@@ -457,21 +458,21 @@ class variolux{
             else{
                 if(Serial.available()) {
                     datos = "";  //elimina datos de buffer
-                    datos = SerialBT.readString();
+                    datos = Serial.readStringUntil('\n');
                     decode();
                     Serial.println(datos);
                     //SerialBT.println(datos);
                 }
                 if(SerialBT.available()) {
                     datos = "";  //elimina datos de buffer
-                    datos = SerialBT.readString();
+                    datos = SerialBT.readStringUntil('\n');
                     decode();
                     Serial.println(datos);
                 }
 
                 if(Serial2.available()){
                     datos = "";  //elimina datos de buffer
-                    datos = Serial2.readString();
+                    datos = Serial2.readStringUntil('\n');                    
                     decode();
                     Serial.println(datos);
                 }
