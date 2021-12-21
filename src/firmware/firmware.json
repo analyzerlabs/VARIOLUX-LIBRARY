@@ -3,5 +3,5 @@
     "version": 2,
     "host": "raw.githubusercontent.com",
     "port": 443,
-    "bin": "https://github.com/analyzerlabs/VARIOLUX-LIBRARY/main/src/firmware/firmware.json"
+    "bin": "https://github.com/analyzerlabs/VARIOLUX-LIBRARY/main/src/firmware/firmware-ECU.bin"
 }
