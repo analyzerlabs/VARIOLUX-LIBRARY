@@ -1,4 +1,3 @@
-
 const int Colors = 134;
 int tablaRGB[Colors][3] = {
 {255,	0,	0},

@@ -4,7 +4,7 @@
 
 
 
-variolux ECU_VL_002("Mando002");
+variolux ECU_VL_002("Equipo002");
 
 void setup() {
 

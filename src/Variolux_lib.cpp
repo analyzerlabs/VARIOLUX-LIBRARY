@@ -10,6 +10,10 @@
 #include "FastLED.h" 
 #include <ESP32Encoder.h>
 #include <HardwareSerial.h>
+#include "ArduinoJson.h"
+#include <WiFiMulti.h>
+#include "esp32fota.h"
+#include <WiFiClientSecure.h>
 
 #define SCREEN_WIDTH 128 
 #define SCREEN_HEIGHT 32
