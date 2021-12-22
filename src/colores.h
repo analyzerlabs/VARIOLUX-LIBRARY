@@ -1,4 +1,4 @@
-const int Colors = 134;
+const int Colors = 130;
 int tablaRGB[Colors][3] = {
 {255,	0,	0},
 {0,	255,	0},

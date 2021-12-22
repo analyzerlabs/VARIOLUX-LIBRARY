@@ -10,9 +10,9 @@ void setup() {
 
   //ECU_VL_002.shutDownVarioPlus();
   ECU_VL_002.setVariablesColors(tablaRGB);
-  ECU_VL_002.OledSetup();
-  ECU_VL_002.EncoderSetup();
-  ECU_VL_002.showOled();
+  //ECU_VL_002.OledSetup();
+  //ECU_VL_002.EncoderSetup();
+  //ECU_VL_002.showOled();
 }
 
 void loop() {
