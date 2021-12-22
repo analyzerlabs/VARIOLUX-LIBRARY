@@ -177,6 +177,9 @@ class variolux{
                 Serial2.begin(9600);
                 runtime=millis();
                 pinMode(button_Demo,INPUT);
+                OledSetup();
+                EncoderSetup();
+                showOled();
             }
         }
 
@@ -230,7 +233,7 @@ class variolux{
                 //menu principal para Fractal
                 if(Nombre == "Mando002" || Nombre == "Mando003"){
                     display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-                    display.setCursor(70,16);  //POSICION DEL ONTADOR DE COLORES EN OLED
+                    display.setCursor(70,0);  //POSICION DEL CONTADOR DE COLORES EN OLED
                     if(FR_ENCODER_SCREEN == 1){
                         display.setTextColor(SSD1306_BLACK,SSD1306_WHITE);
                         RGB_NUM = encoder_FR.getCount();
@@ -241,7 +244,7 @@ class variolux{
                     else display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
 
                     display.print(RGB_NUM);
-                    display.setCursor(100,16);
+                    display.setCursor(10,8);
                     if(FR_ENCODER_SCREEN == 2){
                         display.setTextColor(SSD1306_BLACK,SSD1306_WHITE);
                         tablaRGB[RGB_NUM][0] = encoder_FR.getCount();
@@ -250,8 +253,8 @@ class variolux{
                         tablaRGB[RGB_NUM][0] = encoder_FR.getCount();
                     }
                     else display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-                    //display.print(tablaRGB[RGB_NUM][0]);
-                    display.setCursor(70,16);
+                    display.print(tablaRGB[RGB_NUM][0]);
+                    display.setCursor(60,8);
                     if(FR_ENCODER_SCREEN == 3){
                         display.setTextColor(SSD1306_BLACK,SSD1306_WHITE);
                         tablaRGB[RGB_NUM][1] = encoder_FR.getCount();
@@ -260,8 +263,8 @@ class variolux{
                         tablaRGB[RGB_NUM][1] = encoder_FR.getCount();
                     }
                     else display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-                    //display.print(tablaRGB[RGB_NUM][1]);
-                    display.setCursor(95,16);
+                    display.print(tablaRGB[RGB_NUM][1]);
+                    display.setCursor(90,8);
                     if(FR_ENCODER_SCREEN == 4){
                         display.setTextColor(SSD1306_BLACK,SSD1306_WHITE);
                         tablaRGB[RGB_NUM][2] = encoder_FR.getCount();
@@ -270,18 +273,18 @@ class variolux{
                         tablaRGB[RGB_NUM][2] = encoder_FR.getCount();
                     }
                     else display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-                    //display.print(tablaRGB[RGB_NUM][2]);
+                    display.print(tablaRGB[RGB_NUM][2]);
                     display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
                     // menu principal para varioplus
                     if (Nombre == "Mando002"){
-                        display.setCursor(45,0);
+                        display.setCursor(45,16);
                         if(VP_ENCODER_SCREEN<0)VP_ENCODER_SCREEN=0;
                         if(VP_ENCODER_SCREEN>10)VP_ENCODER_SCREEN=10;
                         display.print(VP_ENCODER_SCREEN*10);
                         display.display();
                     }
                     else if(Nombre == "Mando003"){
-                        display.setCursor(40,0);
+                        display.setCursor(40,16);
                         if(VP_ENCODER_SCREEN<0)VP_ENCODER_SCREEN=0;
                         if(VP_ENCODER_SCREEN>10)VP_ENCODER_SCREEN=10;
                         display.print(Modos[VP_ENCODER_SCREEN]);
@@ -294,16 +297,15 @@ class variolux{
         void updateOled(){
             if(Nombre == "Mando002" || Nombre == "Mando003"){
                 display.clearDisplay();
-                display.setTextSize(2);
+                display.setTextSize(1);
                 display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
                 display.setCursor(0,0);
+                display.print("FR Color#");
                 //display.print(Nombre);
-                display.setCursor(0,0);
+                display.setCursor(0,16);
                 if(Nombre == "Mando002")display.print("VP:    VAC");
                 else if(Nombre == "Mando003")display.print("VP:   ");
                 display.setCursor(0,16);
-                display.print("FR #");
-                display.setCursor(0,0);        
                 oledMenuPrincipal();
             }   
         }
@@ -721,8 +723,6 @@ class variolux{
                     #if _DEBUG_
                         Serial.print("Setting VP CH: ");
                     #endif
-                    int channel = datos[3] - 48;
-                    bool ch_State = bool(datos[3] - 65);
                     for(int i=0;i<6;i++)setVarioplusChannel(i,0);
                     setVarioplusChannel(1,POWERON);
                 }
