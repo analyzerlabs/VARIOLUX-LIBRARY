@@ -9,7 +9,7 @@
 #include <Adafruit_SSD1306.h>
 #include "FastLED.h" 
 #include <ESP32Encoder.h>
-//#include <HardwareSerial.h>
+#include <HardwareSerial.h>
 #include "BluetoothSerial.h"
 #define SCREEN_WIDTH 128 
 #define SCREEN_HEIGHT 32
@@ -24,6 +24,7 @@
      
 class variolux{
     private:
+        int relayState =0;
         BluetoothSerial SerialBT;    
         int colorAsked=0;
         int a;
@@ -126,17 +127,14 @@ class variolux{
                 EEPROM.begin(500);
                 Serial2.begin(9600);    
                    
-                bleInit(Nombre);
+                //bleInit(Nombre);
                 #if _DEBUG_
                     Serial.begin(9600);
                     Serial.println("__DEBUG__ INICIADO");
                 #endif
-                //firmmwareUpdaterSetup();
-                //eepromInit();
+
                 fractalChannels = 2;
-                VarioplusDimeableChannels = 6;
                 VarioplusStaticChannels = 6;
-                VarioplusDimeableSteps = 11;
                 chipRGB = "SK6812"; //SK6812 en otros casos
                 const int P_DAT1 = 22;     //CAMBIAR LOS PIENS DE CONTROL DE TIRA LED
                 const int P_DAT2 = 23;
@@ -145,7 +143,6 @@ class variolux{
                 FastLED.addLeds<LED_TYPE , P_DAT2, GRB>(leds2, NUM_LEDS);
                 FastLED.addLeds<LED_TYPE , P_DAT1, GRB>(leds1, NUM_LEDS);
                 varioplusStaticPins = new int[VarioplusStaticChannels];     //define la cantidad de pasos de 1 varioplus
-                varioplusDimeablePins = new int[VarioplusDimeableSteps];
                 fractalPins =  new int[fractalChannels]; //{14,32,33,25,26,27,13,4,18,19,21};
                 varioplusStaticPins[0] = 32;
                 varioplusStaticPins[1] = 33;
@@ -156,11 +153,9 @@ class variolux{
                 runtime = millis();
                 setPins();
             }
-            else if(Nombre == "EC-FR-003"){            /// 6 blinds
-                //EEPROM.begin(500);
-                //Serial2.begin(9600);     
-                SerialBT.begin("ESP32test");           
-                //bleInit(Nombre);
+            else if(Nombre == "EC-VL-004"){
+                EEPROM.begin(500);
+                Serial2.begin(9600);
                 #if _DEBUG_
                     Serial.begin(9600);
                     Serial.println("__DEBUG__ INICIADO");
@@ -173,26 +168,104 @@ class variolux{
                 //this-> leds2  =  LEDS2;
                 FastLED.addLeds<LED_TYPE , P_DAT2, GRB>(leds2, NUM_LEDS);
                 FastLED.addLeds<LED_TYPE , P_DAT1, GRB>(leds1, NUM_LEDS);
-                varioplusStaticPins = new int[VarioplusStaticChannels];     //define la cantidad de pasos de 1 varioplus
-                varioplusDimeablePins = new int[VarioplusDimeableSteps];
-                fractalPins =  new int[fractalChannels]; //{14,32,33,25,26,27,13,4,18,19,21};
+                runtime = millis();
+                pinMode(26,INPUT);
+                pinMode(25,INPUT);
+                pinMode(33,INPUT);
+                pinMode(32,OUTPUT);
+                relayState = 0;
+            }
+
+            else if(Nombre == "EC-VL-003"){
+                EEPROM.begin(500);
+                Serial2.begin(9600);
+                #if _DEBUG_
+                    Serial.begin(9600);
+                    Serial.println("__DEBUG__ INICIADO");
+                #endif
+                fractalChannels = 2;
+                VarioplusDimeableChannels = 1;
+                VarioplusDimeableSteps = 11;
+                chipRGB = "SK6812"; //SK6812 en otros casos
+                const int P_DAT1 = 18;     //CAMBIAR LOS PIENS DE CONTROL DE TIRA LED
+                const int P_DAT2 = 19;
+                // CRGB LEDS2[NUM_LEDS2];
+                //this-> leds2  =  LEDS2;
+                FastLED.addLeds<LED_TYPE , P_DAT2, GRB>(leds2, NUM_LEDS);
+                FastLED.addLeds<LED_TYPE , P_DAT1, GRB>(leds1, NUM_LEDS);
+                runtime = millis();
+                pinMode(26,INPUT);
+                pinMode(25,INPUT);
+                pinMode(33,INPUT);
+                pinMode(32,OUTPUT);
+            }
+            else if(Nombre == "EC-FR-003"){            /// 6 blinds
+                EEPROM.begin(500);
+                //Serial2.begin(9600);     
+                //SerialBT.begin("ESP32test");           
+                
+                #if _DEBUG_
+                    Serial.begin(9600);
+                    Serial.println("__DEBUG__ INICIADO");
+                #endif
+                fractalChannels = 2;
+                chipRGB = "SK6812"; //SK6812 en otros casos
+                const int P_DAT1 = 18;     //CAMBIAR LOS PIENS DE CONTROL DE TIRA LED
+                const int P_DAT2 = 19;
+                FastLED.addLeds<LED_TYPE , P_DAT2, GRB>(leds2, NUM_LEDS);
+                FastLED.addLeds<LED_TYPE , P_DAT1, GRB>(leds1, NUM_LEDS);
                 runtime = millis();
                 OledSetup();
+                Serial.println("Oled ready");
+                //bleInit(Nombre);
+                Serial.println("Setup ready");
             }
-            else if(Nombre == "Mando002" || Nombre == "MD-VL-001"){
+
+            else if(Nombre == "EC-FR-002"){            /// 6 blinds
+                EEPROM.begin(500);
+                //Serial2.begin(9600);     
+                //SerialBT.begin("ESP32test");           
+                
+                #if _DEBUG_
+                    Serial.begin(9600);
+                    Serial.println("__DEBUG__ INICIADO");
+                #endif
+                fractalChannels = 2;
+                chipRGB = "SK6812"; //SK6812 en otros casos
+                const int P_DAT1 = 18;     //CAMBIAR LOS PIENS DE CONTROL DE TIRA LED
+                const int P_DAT2 = 19;
+                FastLED.addLeds<LED_TYPE , P_DAT2, GRB>(leds2, NUM_LEDS);
+                FastLED.addLeds<LED_TYPE , P_DAT1, GRB>(leds1, NUM_LEDS);
+                runtime = millis();
+                OledSetup();
+                Serial.println("Oled ready");
+                //bleInit(Nombre);
+                Serial.println("Setup ready");
+                pinMode(32,INPUT);
+                pinMode(33,INPUT);
+            }
+            else if(Nombre == "MD-VL-002" || Nombre == "MD-VL-001"){
                 #if _DEBUG_
                     Serial.begin(9600);
                     Serial.println("__DEBUG__ INICIADO");
                 #endif
                 Serial2.begin(9600);
                 runtime=millis();
-    
+                VP_ENCODER[0]=35;
+                VP_ENCODER[1]=23;
+                VP_ENCODER[2]=32;
+                FR_ENCODER[0]=18;
+                FR_ENCODER[1]=19;
+                FR_ENCODER[2]=4;
+                if(Nombre == "MD-VL-002" ){
+                    pinMode(button_Demo,INPUT);
+                }
             }
         }
 
 
         void setPins(){
-            if(Nombre == "EC-VL-002"){
+            if(Nombre == "EC-VL-002" || Nombre == "EC-VL-004" || Nombre == "EC-VL-003" ){
                 for(int i=0;i<VarioplusDimeableSteps;i++){
                     #if _DEBUG_
                         Serial.println("Setting Relay :" + String(varioplusDimeablePins[i]));
@@ -236,23 +309,24 @@ class variolux{
             else if(encoder_FR.getCount()<0)encoder_FR.setCount(FR_LIMIT);
         }
         void oledFractaclBT(){
-            if(Nombre == "EC-FR-003"){
+                    display.setTextSize(1);
                     display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-                    display.setCursor(75,0);  //POSICION DEL CONTADOR DE COLORES EN OLE
+                    display.setCursor(80,0);  //POSICION DEL CONTADOR DE COLORES EN OLE
+                    
                     display.print(RGB_NUM);
-                    display.setCursor(10,8);
+                    display.setTextSize(2);
+                    display.setCursor(0,16);
                     display.print(tablaRGB[RGB_NUM][0]);
-                    display.setCursor(50,8);
+                    display.setCursor(45,16);
                     display.print(tablaRGB[RGB_NUM][1]);
-                    display.setCursor(90,8);
+                    display.setCursor(90,16);
                     display.print(tablaRGB[RGB_NUM][2]);
                     display.display();
-            }
         }
 
         void oledMenuPrincipal(){
                 //menu principal para Fractal
-                if(Nombre == "Mando002" || Nombre == "MD-VL-001"){
+                if(Nombre == "MD-VL-002" || Nombre == "MD-VL-001"){
                     display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
                     display.setCursor(75,0);  //POSICION DEL CONTADOR DE COLORES EN OLED
                     if(FR_ENCODER_SCREEN == 1){
@@ -297,7 +371,7 @@ class variolux{
                     display.print(tablaRGB[RGB_NUM][2]);
                     display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
                     // menu principal para varioplus
-                    if (Nombre == "Mando002"){
+                    if (Nombre == "MD-VL-002"){
                         display.setCursor(45,16);
                         if(VP_ENCODER_SCREEN<0)VP_ENCODER_SCREEN=0;
                         if(VP_ENCODER_SCREEN>10)VP_ENCODER_SCREEN=10;
@@ -314,20 +388,20 @@ class variolux{
                 }
         }
         void updateOledBT(){
-            if(Nombre == "EC-FR-003" ){
+            if(Nombre == "EC-FR-002"  || Nombre == "EC-FR-003" ||Nombre == "EC-VL-004"  ||Nombre == "EC-VL-003"){
                 display.clearDisplay();
                 display.setTextSize(1);
                 display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-                display.setCursor(10,0);
+                display.setCursor(20,0);
                 display.print("FR Color#");
                 //display.print(Nombre);
-                display.setCursor(10,16);
                 display.display();
+                display.setTextSize(2);
             }
         }
 
         void updateOled(){
-            if(Nombre == "Mando002" || Nombre == "MD-VL-001"){
+            if(Nombre == "MD-VL-002" || Nombre == "MD-VL-001"){
                 display.clearDisplay();
                 display.setTextSize(1);
                 display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
@@ -335,7 +409,7 @@ class variolux{
                 display.print("FR Color#");
                 //display.print(Nombre);
                 display.setCursor(10,16);
-                if(Nombre == "Mando002")display.print("VP:        VAC");
+                if(Nombre == "MD-VL-002")display.print("VP:        VAC");
                 else if(Nombre == "MD-VL-001")display.print("VP:   ");
                 if(VP_ENCODER_FLAG){
                     display.setCursor(100,16);
@@ -348,13 +422,15 @@ class variolux{
 
 //****************************** READ ENCODER ************************************//
         void readEncoder(){
-            if(Nombre == "Mando002" || Nombre == "MD-VL-001"){
-                    if(digitalRead(button_Demo)==0){
+            if(Nombre == "MD-VL-002" || Nombre == "MD-VL-001"){
+                if(digitalRead(button_Demo)==0 && Nombre == "MD-VL-002"){
                         sendUART("FR,DEMO");
+                        Serial.println("button demo presionado");
                         delay(250);
                 }
                 if(digitalRead(FR_ENCODER[2]) == 0){
                     enconderTimer = millis();
+                    Serial.println("button encoder FR presionado");
                     while(digitalRead(FR_ENCODER[2]) == 0){
                         delay(100);
                         if(millis()-enconderTimer>10000){
@@ -419,7 +495,8 @@ class variolux{
                 }
 
                 if(digitalRead(VP_ENCODER[2]) == 0){
-                    if(Nombre == "Mando002"){
+                    Serial.println("button VP presionado");
+                    if(Nombre == "MD-VL-002"){
                         encoder_VP.pauseCount();
                         if(encoder_VP.getCount()>= 0 && encoder_VP.getCount()< 200 ){
                             encoder_VP.setCount(200);
@@ -571,7 +648,7 @@ class variolux{
                     tablaRGB[i][j] = data[i][j];
                 }
             }
-            if(Nombre == "Mando002"){
+            if(Nombre == "MD-VL-002" ||Nombre == "MD-VL-001"){
                 OledSetup();
                 EncoderSetup();
             }
@@ -650,26 +727,86 @@ class variolux{
         }
         // ************************* datos recibidos *********************************************************
         void run(){
-            if(Nombre == "EC-FR-003"){
+            //Serial.print(Nombre);
+            //Serial.println(digitalRead(33));
+            if(Nombre == "EC-VL-004" ){
+                if(digitalRead(26)==0){
+                    relayState = 1 - relayState;
+                    digitalWrite(32,relayState);
+                    Serial.println("boton presionado");
+                    delay(500);
+                }
+            }
+
+            if(Nombre == "EC-VL-003" ){
+                if(digitalRead(26)==0){
+                    relayState = 1 - relayState;
+                    digitalWrite(32,relayState);
+                    Serial.println("boton presionado");
+                    delay(400);
+                }
+                if(digitalRead(25)==0){
+                    RGB_NUM++;
+                    if(RGB_NUM >= NUM_colors -1)RGB_NUM = 0;
+                    else if(RGB_NUM < 0)RGB_NUM = NUM_colors -1;
+                    Serial.println("boton presionado");
+                    changeColor(tablaRGB[RGB_NUM][0],tablaRGB[RGB_NUM][1],tablaRGB[RGB_NUM][2]);
                     updateOledBT();
                     oledFractaclBT();
+                    delay(350);
                 }
-
-            if(Nombre=="Mando002" ){
+                if(digitalRead(33)==0){
+                    RGB_NUM--;
+                    if(RGB_NUM >= NUM_colors -1)RGB_NUM = 0;
+                    else if(RGB_NUM < 0)RGB_NUM = NUM_colors -1;
+                    changeColor(tablaRGB[RGB_NUM][0],tablaRGB[RGB_NUM][1],tablaRGB[RGB_NUM][2]);
+                    updateOledBT();
+                    oledFractaclBT();
+                    Serial.println("boton presionado");
+                    delay(350);
+                }
+            }
+            if(Nombre=="MD-VL-002" ){
                 readEncoder();
+                //Serial.println("reading encoder");
+                updateOled();
                 runtime = millis();
-                //Serial.println("Mando002");
+                //Serial.println("MD-VL-002");
                 //recieveFromECU();
             }
             else if(Nombre=="MD-VL-001" ){
                 readEncoder();
+                updateOled();
                 runtime = millis();
                 //Serial.println("MD-VL-001");
                 //recieveFromECU();
             }
-            else if (Nombre=="EC-VL-002" || Nombre=="EC-VL-001" || Nombre =="EC-FR-003"){
+            else if(Nombre =="EC-FR-002"){
+                if(digitalRead(33)==0){
+                    RGB_NUM++;
+                    if(RGB_NUM >= NUM_colors -1)RGB_NUM = 0;
+                    else if(RGB_NUM < 0)RGB_NUM = NUM_colors -1;
+                    changeColor(tablaRGB[RGB_NUM][0],tablaRGB[RGB_NUM][1],tablaRGB[RGB_NUM][2]);
+                    updateOledBT();
+                    oledFractaclBT();
+                    Serial.println("boton presionado");
+                    delay(350);
+                }
+                if(digitalRead(32)==0){
+                    RGB_NUM--;
+                    if(RGB_NUM >= NUM_colors -1)RGB_NUM = 0;
+                    else if(RGB_NUM < 0)RGB_NUM = NUM_colors -1;
+                    changeColor(tablaRGB[RGB_NUM][0],tablaRGB[RGB_NUM][1],tablaRGB[RGB_NUM][2]);
+                    updateOledBT();
+                    oledFractaclBT();
+                    Serial.println("boton presionado");
+                    delay(350);
+                }
+            }
+            else if (Nombre=="EC-VL-002" || Nombre=="EC-VL-001" || Nombre =="EC-FR-003" || Nombre == "EC-VL-003" || Nombre == "EC-VL-004" ){
                 //Serial.println("EC-VL-002");
-                
+                //runtime = millis();
+                //Serial.println(Nombre);
                 if(Serial.available()) {
                     datos = "";  //elimina datos de buffer
                     datos = Serial.readStringUntil('\n');
@@ -678,10 +815,19 @@ class variolux{
                     //SerialBT.println(datos);
                 }
                 if(SerialBT.available()) {
+                    
                     datos = "";  //elimina datos de buffer
                     datos = SerialBT.readStringUntil('\n');
                     decode();
                     Serial.println(datos);
+                    if(Nombre == "EC-FR-003"){
+                        updateOledBT();
+                        oledFractaclBT();
+                    }
+                    else if(Nombre == "EC-VL-004"){
+                        updateOledBT();
+                        oledFractaclBT();
+                    }
                 }
                 if(Nombre != "EC-FR-003"){
                     if(Serial2.available()){
@@ -730,7 +876,7 @@ class variolux{
         }
 
         void  decode(){
-            Serial.println("decode");
+            Serial.print("decode:  ");
             if(datos[0]=='V' && datos[1]=='P' && datos[2]==',' ){
                 if(datos[3]>='A' && datos[3]<='K' && Nombre == "EC-VL-002"){
                     #if _DEBUG_
@@ -859,6 +1005,7 @@ class variolux{
                 else if(datos[3]>='0' && datos[3]<='9' && datos[4]>='0' && datos[4]<='9' && datos[5]>='0' && datos[5]<='9'){
                  
                     int index = datos[5]-48 + 10*(datos[4]-48)+ 100* (datos[3]-48);
+                    RGB_NUM = index;
                     int R_,G_,B_;
                     R_= tablaRGB[index][0];
                     G_= tablaRGB[index][1];
