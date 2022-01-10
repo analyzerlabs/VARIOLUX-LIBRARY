@@ -28,13 +28,13 @@ class variolux{
         BluetoothSerial SerialBT;    
         int colorAsked=0;
         int a;
-        int NUM_colors=130;
-        int tablaRGB[130][3];
+        short NUM_colors=130;
+        short tablaRGB[130][3];
         int RGB_NUM=0;
         String Nombre;
-        int R_ADD = 0;
-        int G_ADD = 100;
-        int B_ADD = 200;
+        short R_ADD = 0;
+        short G_ADD = 100;
+        short B_ADD = 200;
         bool demo = false;
         unsigned long int runtime = 0;
         CRGB leds1[NUM_LEDS];
@@ -43,36 +43,36 @@ class variolux{
         char modulo[];
         String chipRGB; 
         int fractalChannels;
-        int VarioplusDimeableChannels;
-        int VarioplusStaticChannels;
-        int VarioplusDimeableSteps;
+        short VarioplusDimeableChannels;
+        short VarioplusStaticChannels;
+        short VarioplusDimeableSteps;
         int* fractalPins;
         int* varioplusStaticPins;
         int* varioplusDimeablePins;
-        int encoderPins[2][3];
+        short encoderPins[2][3];
         int lastVarioPlusDimeablePin = 0; 
         int lastValue = 0;
         String datos;
         Adafruit_SSD1306 display;
-        int FR_LastState,VP_LastState,FR_State,VP_State,FR_counter,VP_counter;
-        int FR_ENCODER[3] = {0,0,0};
-        int VP_ENCODER[3] = {0,0,0};
+        short FR_LastState,VP_LastState,FR_State,VP_State,FR_counter,VP_counter;
+        short FR_ENCODER[3] = {0,0,0};
+        short VP_ENCODER[3] = {0,0,0};
         ESP32Encoder encoder_FR;
         ESP32Encoder encoder_VP;
         bool encoder_FR_Paused;
         bool encoder_VP_Paused;
         unsigned long int oledTimer = 0;
         unsigned long int enconderTimer = 0;
-        int FR_ENCODER_SCREEN=0 , VP_ENCODER_SCREEN=0;
-        int lastpos;
-        int R_aux,G_aux,B_aux;
-        int VARIOPLUSLEVEL;
-        int FR_LIMIT = 255;
-        int LAST_ENCODER_SCREEN = 0;
+        short FR_ENCODER_SCREEN=0 , VP_ENCODER_SCREEN=0;
+        short lastpos;
+        short R_aux,G_aux,B_aux;
+        short VARIOPLUSLEVEL;
+        short FR_LIMIT = 255;
+        short LAST_ENCODER_SCREEN = 0;
         bool flag_change_color=false;
         int encoder2Timer = 0;
-        int LAST_VP_ENCODER_SCREEN = 0;
-        int button_Demo = 34;
+        short LAST_VP_ENCODER_SCREEN = 0;
+        short button_Demo = 34;
         String Modos[11]={"All on",
                         "All off",
                         "Front",
@@ -94,7 +94,6 @@ class variolux{
                     Serial.begin(9600);
                     Serial.println("__DEBUG__ INICIADO");
                 #endif
-                //firmmwareUpdaterSetup();
                 //eepromInit();
                 fractalChannels = 2;
                 VarioplusDimeableChannels = 1;
@@ -279,7 +278,7 @@ class variolux{
                     Serial.println("Equipo Encendido");
                 #endif 
                 digitalWrite(14,POWEROFF);
-                delay(2000);// esto es frio
+                delay(2000);  //
                 for(int i=0;i<11;i++)digitalWrite(varioplusDimeablePins[i],POWEROFF);
                 digitalWrite(14,POWERON);
             }
@@ -293,14 +292,11 @@ class variolux{
                     digitalWrite(varioplusStaticPins[i],POWEROFF);
                 }
                 #if _DEBUG_
-                    Serial.println("Equipo Encendido");
+                    Serial.println("Equipo Encendido"); 
                 #endif 
                 delay(2000);// esto es frio
             }
-        }
-
-        
-        
+        }        
         
 //***************************** MENU SCREENS ************************************//
         
@@ -560,6 +556,7 @@ class variolux{
         }
 
         void sendVarioPlusChannel(int mode_ch){
+            String msg = "";
             switch(mode_ch){
                 case 0:
                     sendUART("VP,ALLON");
@@ -864,6 +861,7 @@ class variolux{
         }
 
         void changeColor(int R,int G,int B){
+            
             for(int i=0 ; i<NUM_LEDS ; i++){
                         leds1[i] = CRGB(R,G,B);
                         leds2[i] = CRGB(R,G,B);
@@ -877,6 +875,9 @@ class variolux{
 
         void  decode(){
             Serial.print("decode:  ");
+            if(datos[0]=='U' && datos[1]=='p' && datos[2]=='d' && datos[3]=='a' && datos[4]=='t' && datos[5]=='e'){
+                Serial.println("Firmware update Starting..");
+            }
             if(datos[0]=='V' && datos[1]=='P' && datos[2]==',' ){
                 if(datos[3]>='A' && datos[3]<='K' && Nombre == "EC-VL-002"){
                     #if _DEBUG_

@@ -1,0 +1,60 @@
+FRACTAL:
+
+- FR,DEMO 
+
+	Comando que enciende led a led en orden aleatorio en un parpadeo rapido.
+	Es importante volver a enviar el comando para desactivar este modo.
+
+- FR,abc
+	abc representa al numeral de la lista de colores.
+	Comando para configurar un color de la lista. Para esta ocasion va desde 000 hasta 129 ;
+	en caso el numero sea menor a 3 digitos rellenar con "0" delante, ejemplo
+
+	FR,000
+	FR,007
+	FR,012
+	FR,115
+	FR,129
+
+VARIOPLUS DIMEABLE:
+
+- VP,X
+	Comando para configurar el voltaje de salida.
+	X es la variable relacionada al paso del dimeo, sus valores pueden ser 
+	A,B,C,D,E,F,G,H,I,J,K y cada uno de ellos representa un paso de voltaje
+	en el caso de :
+		A =  0v
+		B = 10v
+		C = 20v
+		.
+		.
+		.
+		K = 100v
+
+VARIOPLUS 6 CANALES ON/OFF:
+
+- VP,ALLON
+
+	Comando para encender todos los canales con el voltaje establecido.
+
+- VP,ALLOFF
+
+	Comando para apagar todos los canales y cortar el paso de corriente.
+
+- VP,FRONT
+	
+	Comando para encender los 3 primeros canales.
+
+- VP,REAR
+
+	Comando para encender los 3 ultimos canales
+
+- VP,CENTER
+
+	Comando para encender los 2 canales centrales
+
+- VP,BLINDX
+
+	Comando para encender un canal con el voltaje determinado . X es la variable
+	correspondiente al numero de canal 
+	para este caso , X puede tomar los valores de 1,2,3,4,5 o 6.
