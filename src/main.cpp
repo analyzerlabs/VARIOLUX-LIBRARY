@@ -2,10 +2,10 @@
 #include "Variolux_lib.cpp"
 #include "colores.h"
 
-variolux EC_VL_001("MD-VL-002");
+variolux EC_VL_001("MD-VL-001");
 
 void setup() {//ECU_VL_002.shutDownVarioPlus();
-  EC_VL_001.eepromInit();
+  //EC_VL_001.eepromInit();
   EC_VL_001.setVariablesColors(tablaRGB);
   EC_VL_001.EncoderSetup();
   EC_VL_001.OledSetup();
