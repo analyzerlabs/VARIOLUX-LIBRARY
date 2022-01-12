@@ -87,7 +87,6 @@ class variolux{
                     Serial.begin(9600);
                     Serial.println("__DEBUG__ INICIADO");
                 #endif
-                
                 fractalChannels = 2;
                 VarioplusDimeableChannels = 1;
                 VarioplusDimeableSteps = 11;
@@ -246,7 +245,7 @@ class variolux{
 
 
         void setPins(){
-            if(Nombre == "EC-VL-002" || Nombre == "EC-VL-004" || Nombre == "EC-VL-003" ){
+            if(Nombre == "EC-VL-002" ){
                 for(int i=0;i<VarioplusDimeableSteps;i++){
                     #if _DEBUG_
                         Serial.println("Setting Relay :" + String(varioplusDimeablePins[i]));
@@ -639,17 +638,46 @@ class variolux{
             EEPROM.commit(); 
             delay(1);
         }
+        void getColors(int input){
+            String NumColor = "";
+            String __RED = "",__GREEN ="" , __BLUE="";
+            if(input > 0 && input<100){
+                if(input<10){
+                    NumColor = "00" + String(input);
+                }
+                else{
+                    NumColor = "0" + String(input);
+                }
+            }
+            else if(input >= 100 && input < 1000){
 
-        void getColor(int _addr_){
-            tablaRGB[_addr_][0] = EEPROM.read(_addr_*3+0);
-            tablaRGB[_addr_][1] = EEPROM.read(_addr_*3+1);
-            tablaRGB[_addr_][2] = EEPROM.read(_addr_*3+2); 
+            }
+            for(int i=0;i<input;i++){
+                String  c = getStringRGB(input);
+                sendUART("RGB,"+ c);
+                delay(10);
+            }
+        }
+        String getStringRGB( int n_color){
+            String msg = "";
+            int RGB___ = getColor(n_color ,0);
+            if(RGB___ < 100)msg  += String();
+            msg +=",";
+            msg  += String(getColor(n_color ,1));
+            msg +=",";
+            msg  += String(getColor(n_color ,2));
+            return msg;
+        }
+        int getColor(int _addr_, int rgb){
+            tablaRGB[_addr_][rgb] = EEPROM.read(_addr_*3+rgb); 
             delay(1);
+            return tablaRGB[_addr_][rgb];
         }
 
         void getDataColors(){
             for(int i=0 ;i<NUM_colors;i++){
-                getColor(i);
+                sendUART("OK+"+getStringRGB(i));
+                delay(10);
             }
         }
 
@@ -695,20 +723,20 @@ class variolux{
                     relayState = 1 - relayState;
                     digitalWrite(32,relayState);
                     Serial.println("boton presionado");
-                    delay(500);
+                    delay(200);
                 }
             }
 
-            if(Nombre == "EC-VL-003" ){
+            if(Nombre == "EC-VL-003"  || Nombre =="EC-VL-004"  ){
                 if(digitalRead(26)==0){
                     relayState = 1 - relayState;
                     digitalWrite(32,relayState);
                     #if _DEBUG_
                     Serial.println("Button Pressed");
                     #endif
-                    delay(400);
+                    delay(200);
                 }
-                if(digitalRead(25)==0){
+                if(digitalRead(33)==0){
                     RGB_NUM++;
                     if(RGB_NUM >= NUM_colors -1)RGB_NUM = 0;
                     else if(RGB_NUM < 0)RGB_NUM = NUM_colors -1;
@@ -720,7 +748,7 @@ class variolux{
                     oledFractaclBT();
                     delay(350);
                 }
-                if(digitalRead(33)==0){
+                if(digitalRead(25)==0){
                     RGB_NUM--;
                     if(RGB_NUM >= NUM_colors -1)RGB_NUM = 0;
                     else if(RGB_NUM < 0)RGB_NUM = NUM_colors -1;
@@ -870,13 +898,16 @@ class variolux{
 
         void sendUART(String command){
             Serial2.println(command);
-            Serial.println("enviando");
+            Serial.print("ok sent: ");
+            Serial.println(command);
         }
 
         void  decode(){
             Serial.print("decode:  ");
-            
-            if(datos[0]=='V' && datos[1]=='P' && datos[2]==',' ){
+            if(datos[0]=='G' && datos[1]=='E' && datos[2]=='T'){
+                getDataColors();
+            }
+            else if(datos[0]=='V' && datos[1]=='P' && datos[2]==',' ){
                 if (datos[3]=='O' && datos[4]=='N' && Nombre == "EC-VL-004")
                 {
                     relayState = 1;
