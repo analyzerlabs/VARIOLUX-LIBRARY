@@ -800,17 +800,19 @@ class variolux{
             else if (Nombre=="EC-VL-002" || Nombre=="EC-VL-001" || Nombre == "EC-FR-002" || Nombre =="EC-FR-003" || Nombre == "EC-VL-003" || Nombre == "EC-VL-004" ){
                 //runtime = millis();
                 //Serial.println(Nombre);
-                if(Serial.available()) {
-                    datos = "";  //elimina datos de buffer
+                if(Serial.available()) {     
+                    
                     datos = Serial.readStringUntil('\n');
-                    decode();
+                    datos.trim();
+                    decode(0);
                     Serial.println(datos);
                     //SerialBT.println(datos);
                 }
                 if(SerialBT.available()) {
                     datos = "";  //elimina datos de buffer
                     datos = SerialBT.readStringUntil('\n');
-                    decode();
+                    datos.trim();
+                    decode(2);
                     Serial.println(datos);
                     if(Nombre == "EC-FR-003"){
                         updateOledBT();
@@ -824,8 +826,9 @@ class variolux{
                 if(Nombre != "EC-FR-003"){
                     if(Serial2.available()){
                         datos = "";  //elimina datos de buffer
-                        datos = Serial2.readStringUntil('\n');                    
-                        decode();
+                        datos = Serial2.readStringUntil('\n');      
+                        datos.trim();              
+                        decode(1);
                         Serial.println(datos);
                     }
                 }
@@ -901,119 +904,125 @@ class variolux{
             Serial.print("ok sent: ");
             Serial.println(command);
         }
+        void ok(int ch){
+            switch (ch)
+            {
+            case 0:
+                Serial.println("OK");
+                break;
+            case 1:
+                Serial2.println("OK");
+                break;
+            case 2:
+                SerialBT.println("OK");
+                break;
+            default:
+                break;
+            }
+        }
+        /*String *split(String input[]){
+            int index[5];
+            int j=0;
+            for(int i=0 ;i < input.length() ;i++){
+                if(input[i] == ","){
+                    index[j]=i;
+                    j++;
+                }
+            }
+            return output;
+        }*/
 
-        void  decode(){
+        void  decode(int canal){
+            //String command =  (datos,",");
             Serial.print("decode:  ");
-            if(datos[0]=='G' && datos[1]=='E' && datos[2]=='T'){
+            if(datos == "FR,DEMO"){
+                    demo = ! demo;
+                    ok(canal);
+                }  
+
+            else if(datos == "GET"){
+                ok(canal);
                 getDataColors();
             }
-            else if(datos[0]=='V' && datos[1]=='P' && datos[2]==',' ){
-                if (datos[3]=='O' && datos[4]=='N' && Nombre == "EC-VL-004")
-                {
-                    relayState = 1;
-                    digitalWrite(32,relayState);
-                }
-                else if (datos[3]=='O' && datos[4]=='F' && datos[5]=='F' && Nombre == "EC-VL-004")
-                {
-                    relayState = 0;
-                    digitalWrite(32,relayState);
-                }
+            else if(datos == "VP,ON" &&  (Nombre == "EC-VL-004" || Nombre == "EC-VL-003")){               
+                relayState = 1;
+                digitalWrite(32,relayState);
+                ok(canal);
+            }
+            else if(datos == "VP,OFF" && (Nombre == "EC-VL-004" || Nombre == "EC-VL-003")){
+                relayState = 0;
+                digitalWrite(32,relayState);
+                ok(canal);
+            }
 
-                else if(datos[3]>='A' && datos[3]<='K' && Nombre == "EC-VL-002"){
+            else if(datos == "VP,A" || datos == "VP,B" || datos == "VP,C"
+                    || datos == "VP,D" || datos == "VP,E" || datos == "VP,F"
+                    || datos == "VP,G" || datos == "VP,H" || datos == "VP,I"
+                    || datos == "VP,J" || datos == "VP,K" && Nombre == "EC-VL-002"){
                     #if _DEBUG_
                         Serial.print("Setting VP: ");
                     #endif
                     int voltaje = datos[3] - 65;
                     Serial.println(datos[3] - 65); 
                     setVarioplusStep(voltaje);
-                }
-                else if(datos[3]=='A' && datos[4]=='L' && datos[5]=='L' && datos[6]=='O' && datos[7]=='N' ){
+                    ok(canal);
+            }
+            else if(datos == "VP,ALLON" ){
                     #if _DEBUG_
                         Serial.print("Setting VP CH: ");
                     #endif
                     for(int i=0;i<6;i++)setVarioplusChannel(i,1);
-                }
-                else if(datos[3]=='A' && datos[4]=='L' && datos[5]=='L' && datos[6]=='O' && datos[7]=='F' && datos[8]=='F' ){
-                    #if _DEBUG_
-                        Serial.print("Setting VP CH: ");
-                    #endif
-                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
-                }
-                else if(datos[3]=='F' && datos[4]=='R' && datos[5]=='O' && datos[6]=='N' && datos[7]=='T'){
-                    #if _DEBUG_
-                        Serial.print("Setting VP CH: ");
-                    #endif
-                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
-                    setVarioplusChannel(0,POWERON);
-                    setVarioplusChannel(1,POWERON);
-                    setVarioplusChannel(2,POWERON);
-                }
-                else if(datos[3]=='R' && datos[4]=='E' && datos[5]=='A' && datos[6]=='R' ){
-                    #if _DEBUG_
-                        Serial.print("Setting VP CH: ");
-                    #endif
-                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
-                    setVarioplusChannel(3,POWERON);
-                    setVarioplusChannel(4,POWERON);
-                    setVarioplusChannel(5,POWERON);
-                }
-                else if(datos[3]=='C' && datos[4]=='E' && datos[5]=='N' && datos[6]=='T' && datos[7]=='E' && datos[8]=='R'){
-                    #if _DEBUG_
-                        Serial.print("Setting VP CH: ");
-                    #endif
-                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
-                    setVarioplusChannel(2,POWERON);
-                    setVarioplusChannel(3,POWERON);
-                }
-                else if(datos[3]=='B' && datos[4]=='L' && datos[5]=='I' && datos[6]=='N' && datos[7]=='D' && datos[8]=='1'){
-                    #if _DEBUG_
-                        Serial.print("Setting VP CH: ");
-                    #endif
-                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
-                    setVarioplusChannel(0,POWERON);
-                }
-
-                else if(datos[3]=='B' && datos[4]=='L' && datos[5]=='I' && datos[6]=='N' && datos[7]=='D' && datos[8]=='2'){
-                    #if _DEBUG_
-                        Serial.print("Setting VP CH: ");
-                    #endif
-                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
-                    setVarioplusChannel(1,POWERON);
-                }
-
-                else if(datos[3]=='B' && datos[4]=='L' && datos[5]=='I' && datos[6]=='N' && datos[7]=='D' && datos[8]=='3'){
-                    #if _DEBUG_
-                        Serial.print("Setting VP CH: ");
-                    #endif
-                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
-                    setVarioplusChannel(2,POWERON);
-                }
-
-                else if(datos[3]=='B' && datos[4]=='L' && datos[5]=='I' && datos[6]=='N' && datos[7]=='D' && datos[8]=='4'){
-                    #if _DEBUG_
-                        Serial.print("Setting VP CH: ");
-                    #endif
-                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
-                    setVarioplusChannel(3,POWERON);
-                }
-
-                else if(datos[3]=='B' && datos[4]=='L' && datos[5]=='I' && datos[6]=='N' && datos[7]=='D' && datos[8]=='5'){
-                    #if _DEBUG_
-                        Serial.print("Setting VP CH: ");
-                    #endif
-                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
-                    setVarioplusChannel(4,POWERON);
-                }
-                else if(datos[3]=='B' && datos[4]=='L' && datos[5]=='I' && datos[6]=='N' && datos[7]=='D' && datos[8]=='6'){
-                    #if _DEBUG_
-                        Serial.print("Setting VP CH: ");
-                    #endif
-                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
-                    setVarioplusChannel(5,POWERON);
-                }
+                    ok(canal);
             }
-            else if(datos[0]=='A'  && datos[1]=='S'  && datos[2] =='K' && datos[3]=='L'  && datos[4] =='E' && datos[5]=='D'  && datos[6] =='S'){
+            else if(datos == "VP,ALLOFF" ){
+                    #if _DEBUG_
+                        Serial.print("Setting VP CH: ");
+                    #endif
+                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
+                    ok(canal);
+                }
+            else if(datos == "VP,FRONT"){
+                    #if _DEBUG_
+                        Serial.print("Setting VP CH: ");
+                    #endif
+                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
+                    setVarioplusChannel(0,POWERON);
+                    setVarioplusChannel(1,POWERON);
+                    setVarioplusChannel(2,POWERON);
+                    ok(canal);
+                }
+            else if(datos == "VP,REAR"){
+                    #if _DEBUG_
+                        Serial.print("Setting VP CH: ");
+                    #endif
+                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
+                    setVarioplusChannel(3,POWERON);
+                    setVarioplusChannel(4,POWERON);
+                    setVarioplusChannel(5,POWERON);
+                    ok(canal);
+                }
+            else if(datos == "VP,CENTER"){
+                    #if _DEBUG_
+                        Serial.print("Setting VP CH: ");
+                    #endif
+                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
+                    setVarioplusChannel(2,POWERON);
+                    setVarioplusChannel(3,POWERON);
+                    ok(canal);
+            }
+            else if(datos == "VP,BLIND1" || datos == "VP,BLIND2" || datos == "VP,BLIND3" ||
+                    datos == "VP,BLIND4" || datos == "VP,BLIND5" || datos == "VP,BLIND6" ){
+                    #if _DEBUG_
+                        Serial.print("Setting VP CH: ");
+                    #endif
+                    for(int i=0;i<6;i++)setVarioplusChannel(i,0);
+                    setVarioplusChannel(int(datos[8])-1,POWERON);
+                    ok(canal);
+                }
+
+            else if(datos == "ASKLEDS"){
                 sendNumberofLeds();
+                ok(canal);
             }
 
             else if(datos[0]=='F' && datos[1]=='R'  && datos[2] ==',' ){
@@ -1029,7 +1038,11 @@ class variolux{
                     changeColor(R,G,B);
                     #if _DEBUG_
                         Serial.print("RGB : ");Serial.print(R);Serial.print(",");Serial.print(G);Serial.print(",");Serial.println(B);
+                        Serial.print("Canal # " + String(canal));
                     #endif
+                    ok(canal);
+                    
+                    
                 }
                 else if(datos[3]=='S' &&  datos[4]=='E' &&  datos[5]=='T' 
                                       &&  datos[6]>='0' &&  datos[6]<='9' &&  datos[7]>='0' &&  datos[7]<='9' &&  datos[8]>='0' &&  datos[8]<='9'
@@ -1042,10 +1055,10 @@ class variolux{
                     int G = 100*(datos[14]-48) +10*(datos[15]-48) +datos[16]-48;
                     int B = 100*(datos[18]-48) +10*(datos[19]-48) +datos[20]-48;
                     setColor(index ,R,G,B);
+                    ok(canal);
                 }
 
                 else if(datos[3]>='0' && datos[3]<='9' && datos[4]>='0' && datos[4]<='9' && datos[5]>='0' && datos[5]<='9'){
-                 
                     int index = datos[5]-48 + 10*(datos[4]-48)+ 100* (datos[3]-48);
                     RGB_NUM = index;
                     int R_,G_,B_;
@@ -1053,10 +1066,8 @@ class variolux{
                     G_= tablaRGB[index][1];
                     B_= tablaRGB[index][2];
                     changeColor(R_,G_,B_);
+                    ok(canal);
                 }
-                else if(datos[3]=='D' && datos[4]=='E' && datos[5]=='M' && datos[6]=='O'){
-                    demo = ! demo;
-                } 
-            }   
+            }  
         }
 };
