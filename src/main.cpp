@@ -2,20 +2,20 @@
 #include "Variolux_lib.cpp"
 #include "colores.h"
 
-variolux EC_VL_001("EC-VL-004");
+variolux EC("MD-VL-001");
 
 void setup() {//ECU_VL_002.shutDownVarioPlus();
   //EC_VL_001.eepromInit();
-  EC_VL_001.setVariablesColors(tablaRGB);
+  EC.setVariablesColors(tablaRGB);
   //EC_VL_001.EncoderSetup();
-  EC_VL_001.OledSetup();
+  EC.OledSetup();
   //EC_VL_001.updateOled();
   
-  EC_VL_001.updateOledBT();
-  EC_VL_001.oledFractaclBT();
-  EC_VL_001.bleInit("EC-VL-004");
+  EC.updateOledBT();
+  EC.oledFractaclBT();
+  //EC_VL_001.bleInit("EC-VL-003");
 }
 
 void loop() {
-  EC_VL_001.run();
+  EC.run();
 }

@@ -17,7 +17,7 @@
 #define SCREEN_ADDRESS 0x3C
 #define POWEROFF 0
 #define POWERON 1
-#define _DEBUG_ 1
+#define _DEBUG_ 0
      
 class variolux{
     private:
@@ -25,8 +25,8 @@ class variolux{
         int a=0;
         int relayState =0;
         BluetoothSerial SerialBT;    
-        short NUM_colors=130;
-        short tablaRGB[130][3];
+        short NUM_colors=131;
+        short tablaRGB[131][3];
         int RGB_NUM=0;
         String Nombre;
         short R_ADD = 0;
@@ -189,10 +189,10 @@ class variolux{
             else if(Nombre == "EC-FR-003"){            /// 6 blinds
                 //Serial2.begin(9600);     
                 //SerialBT.begin("ESP32test");           
-                
+                Serial.begin(9600);
                 #if _DEBUG_
-                    Serial.begin(9600);
                     Serial.println("__DEBUG__ INICIADO");
+                    Serial.println("Setup ready");
                 #endif
                 fractalChannels = 2;
                 const int P_DAT1 = 18;     //CAMBIAR LOS PIENS DE CONTROL DE TIRA LED
@@ -201,16 +201,17 @@ class variolux{
                 FastLED.addLeds<LED_TYPE , P_DAT1, GRB>(leds1, NUM_LEDS);
                 runtime = millis();
                 OledSetup();
-                Serial.println("Setup ready");
+                
             }
 
             else if(Nombre == "EC-FR-002"){            // fractal panel
                 Serial2.begin(9600);     
                 //SerialBT.begin("ESP32test");   comunicacion bt se inicia en el setup del main        
-                
+                Serial.begin(9600);
                 #if _DEBUG_
-                    Serial.begin(9600);
                     Serial.println("__DEBUG__ INICIADO");
+                    Serial.println("Oled ready");
+                    Serial.println("Setup ready");
                 #endif
                 fractalChannels = 2;
                 const int P_DAT1 = 18;     //CAMBIAR LOS PIENS DE CONTROL DE TIRA LED
@@ -219,14 +220,12 @@ class variolux{
                 FastLED.addLeds<LED_TYPE , P_DAT1, GRB>(leds1, NUM_LEDS);
                 runtime = millis();
                 OledSetup();
-                Serial.println("Oled ready");
-                Serial.println("Setup ready");
                 pinMode(32,INPUT);
                 pinMode(33,INPUT);
             }
             else if(Nombre == "MD-VL-002" || Nombre == "MD-VL-001"){
-                #if _DEBUG_
-                    Serial.begin(9600);
+                Serial.begin(9600);
+                #if _DEBUG_ 
                     Serial.println("__DEBUG__ INICIADO");
                 #endif
                 Serial2.begin(9600);
@@ -288,16 +287,27 @@ class variolux{
         void oledFractaclBT(){
                     display.setTextSize(1);
                     display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-                    display.setCursor(80,0);  //POSICION DEL CONTADOR DE COLORES EN OLED
                     
+                    
+                    int rojo,azul,verde;
+                    rojo = tablaRGB[RGB_NUM][0];
+                    verde = tablaRGB[RGB_NUM][1];
+                    azul = tablaRGB[RGB_NUM][2];
+                    display.setCursor(80,0);  //POSICION DEL CONTADOR DE COLORES EN OLED
                     display.print(RGB_NUM);
                     display.setTextSize(2);
-                    display.setCursor(0,16);
-                    display.print(tablaRGB[RGB_NUM][0]);
-                    display.setCursor(45,16);
-                    display.print(tablaRGB[RGB_NUM][1]);
-                    display.setCursor(90,16);
-                    display.print(tablaRGB[RGB_NUM][2]);
+                    if(rojo>=0 && rojo <10) display.setCursor(15,16);
+                    else if(rojo>=10 && rojo <100)display.setCursor(7,16);
+                    else if(rojo>=100 && rojo <1000)display.setCursor(0,16);
+                    display.print(rojo);
+                    if(verde>=0 && verde <10) display.setCursor(60,16);
+                    else if(verde>=10 && verde <100)display.setCursor(52,16);
+                    else if(verde>=100 && verde <1000)display.setCursor(45,16);
+                    display.print(verde);
+                    if(azul>=0 && azul <10) display.setCursor(105,16);
+                    else if(azul>=10 && azul <100)display.setCursor(97,16);
+                    else if(azul>=100 && azul <1000)display.setCursor(90,16);
+                    display.print(azul);
                     display.display();
         }
 
@@ -370,7 +380,7 @@ class variolux{
                 display.setTextSize(1);
                 display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
                 display.setCursor(20,0);
-                display.print("FR Color#");
+                display.print("FR Color #");
                 //display.print(Nombre);
                 display.display();
                 display.setTextSize(2);
@@ -383,7 +393,7 @@ class variolux{
                 display.setTextSize(1);
                 display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
                 display.setCursor(10,0);
-                display.print("FR Color#");
+                display.print("FR Color #");
                 //display.print(Nombre);
                 display.setCursor(10,16);
                 if(Nombre == "MD-VL-002")display.print("VP:        VAC");
@@ -402,12 +412,16 @@ class variolux{
             if(Nombre == "MD-VL-002" || Nombre == "MD-VL-001"){
                 if(digitalRead(button_Demo)==0 && Nombre == "MD-VL-002"){
                         sendUART("FR,DEMO");
-                        Serial.println("button demo presionado");
-                        delay(250);
+                        #if _DEBUG_
+                            Serial.println("button demo presionado");
+                        #endif
+                        delay(150);
                 }
                 if(digitalRead(FR_ENCODER[2]) == 0){
                     enconderTimer = millis();
-                    Serial.println("button encoder FR presionado");
+                    #if _DEBUG_
+                        Serial.println("button encoder FR presionado");
+                    #endif
                     while(digitalRead(FR_ENCODER[2]) == 0){
                         delay(100);
                         if(millis()-enconderTimer>10000){
@@ -440,7 +454,6 @@ class variolux{
                     else if(FR_ENCODER_SCREEN == 2 && flag_change_color){
                         FR_LIMIT=255;
                         encoder_FR.setCount(tablaRGB[RGB_NUM][0]);
-                        Serial.println(tablaRGB[RGB_NUM][0]);
                         encoder_FR.resumeCount();
                         LAST_ENCODER_SCREEN = FR_ENCODER_SCREEN;
                     } 
@@ -467,12 +480,10 @@ class variolux{
                     else if(FR_ENCODER_SCREEN == 0 && LAST_ENCODER_SCREEN == 1){
                         encoder_FR.pauseCount();
                     }
-                    Serial.println("FR_SCREEN : "+ String(FR_ENCODER_SCREEN));
-                    Serial.println("lasr FR_SCREEN : "+ String(LAST_ENCODER_SCREEN));
+
                 }
 
                 if(digitalRead(VP_ENCODER[2]) == 0){
-                    Serial.println("button VP presionado");
                     if(Nombre == "MD-VL-002"){
                         encoder_VP.pauseCount();
                         if(encoder_VP.getCount()>= 0 && encoder_VP.getCount()< encoderSpeed ){
@@ -486,7 +497,6 @@ class variolux{
                         delay(250);
                         encoder_VP.resumeCount();
                         a= encoder_VP.getCount();
-                        Serial.println("VARIO PLUS LEVEL : " + String(VP_ENCODER_SCREEN));
                     }
                     else if(Nombre =="MD-VL-001"){
                         VP_ENCODER_FLAG=!VP_ENCODER_FLAG;
@@ -504,8 +514,6 @@ class variolux{
                 if(LAST_VP_ENCODER_SCREEN != VP_ENCODER_SCREEN){
                     LAST_VP_ENCODER_SCREEN = VP_ENCODER_SCREEN;
                     setVarioPlus(VP_ENCODER_SCREEN);
-                    
-                    Serial.println("VARIO PLUS LEVEL : " + String(VP_ENCODER_SCREEN));
                 }
                 
                 if(encoder_VP.getCount()>=encoderSpeed)encoder_VP.setCount(encoderSpeed);
@@ -684,8 +692,8 @@ class variolux{
         void eepromInit(){
             EEPROM.begin(512);
             if (!EEPROM.begin(512)) {
-                Serial.println("Failed to initialise EEPROM");
-                Serial.println("Restarting...");
+                //Serial.println("Failed to initialise EEPROM");
+                //Serial.println("Restarting...");
                 EEPROM.begin(512);
                 delay(1000);
                // ESP.restart();
@@ -716,37 +724,29 @@ class variolux{
         }
         // ************************* datos recibidos *********************************************************
         void run(){
-            //Serial.print(Nombre);
-            //Serial.println(digitalRead(33));
-            if(Nombre == "EC-VL-004" ){
-                if(digitalRead(26)==0){
-                    relayState = 1 - relayState;
-                    digitalWrite(32,relayState);
-                    Serial.println("boton presionado");
-                    delay(200);
-                }
-            }
-
             if(Nombre == "EC-VL-003"  || Nombre =="EC-VL-004"  ){
                 if(digitalRead(26)==0){
                     relayState = 1 - relayState;
                     digitalWrite(32,relayState);
                     #if _DEBUG_
-                    Serial.println("Button Pressed");
+                        Serial.println("Button Pressed");
                     #endif
-                    delay(200);
+                    delay(150);
+                    while(digitalRead(26)==0){
+                        
+                    }
                 }
                 if(digitalRead(33)==0){
                     RGB_NUM++;
                     if(RGB_NUM >= NUM_colors -1)RGB_NUM = 0;
                     else if(RGB_NUM < 0)RGB_NUM = NUM_colors -1;
                     #if _DEBUG_
-                    Serial.println("Button Pressed");
+                        Serial.println("Button Pressed");
                     #endif
                     changeColor(tablaRGB[RGB_NUM][0],tablaRGB[RGB_NUM][1],tablaRGB[RGB_NUM][2]);
                     updateOledBT();
                     oledFractaclBT();
-                    delay(350);
+                    delay(150);
                 }
                 if(digitalRead(25)==0){
                     RGB_NUM--;
@@ -756,9 +756,9 @@ class variolux{
                     updateOledBT();
                     oledFractaclBT();
                     #if _DEBUG_
-                    Serial.println("Button Pressed");
+                        Serial.println("Button Pressed");
                     #endif
-                    delay(350);
+                    delay(150);
                 }
             }
             if(Nombre=="MD-VL-002" ){
@@ -780,9 +780,9 @@ class variolux{
                     updateOledBT();
                     oledFractaclBT();
                     #if _DEBUG_
-                    Serial.println("Button Pressed");
+                        Serial.println("Button Pressed");
                     #endif
-                    delay(350);
+                    delay(200);
                 }
                 if(digitalRead(32)==0){
                     RGB_NUM--;
@@ -792,28 +792,30 @@ class variolux{
                     updateOledBT();
                     oledFractaclBT();
                     #if _DEBUG_
-                    Serial.println("Button Pressed");
+                        Serial.println("Button Pressed");
                     #endif
-                    delay(350);
+                    delay(200);
                 }
             }
             else if (Nombre=="EC-VL-002" || Nombre=="EC-VL-001" || Nombre == "EC-FR-002" || Nombre =="EC-FR-003" || Nombre == "EC-VL-003" || Nombre == "EC-VL-004" ){
-                //runtime = millis();
-                //Serial.println(Nombre);
+                
                 if(Serial.available()) {     
                     
                     datos = Serial.readStringUntil('\n');
                     datos.trim();
                     decode(0);
-                    Serial.println(datos);
-                    //SerialBT.println(datos);
+                    #if _DEBUG_
+                        Serial.println(datos);
+                    #endif
                 }
                 if(SerialBT.available()) {
                     datos = "";  //elimina datos de buffer
                     datos = SerialBT.readStringUntil('\n');
                     datos.trim();
                     decode(2);
-                    Serial.println(datos);
+                    #if _DEBUG_
+                        Serial.println(datos);
+                    #endif
                     if(Nombre == "EC-FR-003"){
                         updateOledBT();
                         oledFractaclBT();
@@ -829,7 +831,9 @@ class variolux{
                         datos = Serial2.readStringUntil('\n');      
                         datos.trim();              
                         decode(1);
-                        Serial.println(datos);
+                        #if _DEBUG_
+                            Serial.println(datos);
+                        #endif
                     }
                 }
                 
@@ -884,12 +888,12 @@ class variolux{
                 digitalWrite(varioplusDimeablePins[0],POWEROFF); //APAGA RELAY 0
                 delay(50);
                 digitalWrite(varioplusDimeablePins[value],POWERON);
-                lastValue = value;
-                Serial.print("Last Value = ");
-                Serial.println(lastValue);
-                Serial.print("new Value = ");
-                Serial.println(value);
+                lastValue = value;          
                 #if _DEBUG_
+                    Serial.print("Last Value = ");
+                    Serial.println(lastValue);
+                    Serial.print("new Value = ");
+                    Serial.println(value);
                     Serial.println("cambiando Relay :" + String(varioplusDimeablePins[value]));
                 #endif
             }
@@ -901,8 +905,10 @@ class variolux{
 
         void sendUART(String command){
             Serial2.println(command);
-            Serial.print("ok sent: ");
-            Serial.println(command);
+            #if _DEBUG_
+                Serial.print("ok sent: ");
+                Serial.println(command);
+            #endif
         }
         void ok(int ch){
             switch (ch)
@@ -934,7 +940,10 @@ class variolux{
 
         void  decode(int canal){
             //String command =  (datos,",");
-            Serial.print("decode:  ");
+            #if _DEBUG_
+                Serial.print("decode:  ");
+            #endif
+
             if(datos == "FR,DEMO"){
                     demo = ! demo;
                     ok(canal);
@@ -959,11 +968,12 @@ class variolux{
                     || datos == "VP,D" || datos == "VP,E" || datos == "VP,F"
                     || datos == "VP,G" || datos == "VP,H" || datos == "VP,I"
                     || datos == "VP,J" || datos == "VP,K" && Nombre == "EC-VL-002"){
+                    
+                    int voltaje = datos[3] - 65;
                     #if _DEBUG_
                         Serial.print("Setting VP: ");
+                        Serial.println(datos[3] - 65); 
                     #endif
-                    int voltaje = datos[3] - 65;
-                    Serial.println(datos[3] - 65); 
                     setVarioplusStep(voltaje);
                     ok(canal);
             }
