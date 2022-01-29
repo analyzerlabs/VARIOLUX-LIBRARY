@@ -1,0 +1,2 @@
+#define LED_TYPE SK6812
+#define NUM_LEDS 168
