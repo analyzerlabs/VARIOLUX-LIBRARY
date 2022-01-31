@@ -696,7 +696,7 @@ class variolux{
                     #if _DEBUG_
                         Serial.println("Button Pressed");
                     #endif
-                    delay(150);
+                    delay(250);
                     while(digitalRead(26)==0){
 
                     }

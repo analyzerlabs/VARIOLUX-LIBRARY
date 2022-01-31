@@ -1,4 +1,4 @@
-#include "Variolux_lib.cpp"
+#include "Variolux_lib.h"
 #include "colores.h"
 String modelo = "EC-VL-001";
 variolux EC(modelo);              // MD-VL-001 -> mando para EC-VL-001 : CONTROL DE 6 CANALES ON/OFF VARIOPLUS

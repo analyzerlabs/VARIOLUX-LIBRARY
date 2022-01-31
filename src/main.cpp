@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "Variolux_lib.cpp"
 #include "colores.h"
-String modelo = "EC-VL-001";
+String modelo = "EC-VL-004";
 variolux EC(modelo);              // MD-VL-001 -> mando para EC-VL-001 : CONTROL DE 6 CANALES ON/OFF VARIOPLUS
                                   // MD-VL-002 -> mando para EC-VL-002 : CONTROL DE 1 CANAL DIMEABLE DE 10 PASOS VARIOPLUS
                                   // EC-VL-003 -> CONTROL DE 1 CANAL ON/OFF , CONTROLADO POR BOTONES EN PANEL
