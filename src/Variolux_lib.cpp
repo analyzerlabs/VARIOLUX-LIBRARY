@@ -17,7 +17,7 @@
 #define SCREEN_ADDRESS 0x3C
 #define POWEROFF 0
 #define POWERON 1
-#define _DEBUG_ 0
+#define _DEBUG_ 1
      
 class variolux{
     private:
@@ -993,6 +993,7 @@ class variolux{
                     #endif
                     for(int i=0;i<6;i++)setVarioplusChannel(i,0);
                     setVarioplusChannel(int(datos[8])-1,POWERON);
+                    Serial.println(int(datos[8])-49);
                     ok(canal);
                 }
 
