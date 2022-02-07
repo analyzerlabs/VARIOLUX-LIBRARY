@@ -32,9 +32,7 @@ void setup() {
       EC.updateOledBT();
       EC.oledFractaclBT();
   }
-  else if(modelo == "EC-VL-001" || modelo == "EC-VL-001" ){
 
-  }
 
 }
 
